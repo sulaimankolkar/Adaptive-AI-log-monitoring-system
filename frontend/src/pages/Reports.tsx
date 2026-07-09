@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Alert, Chip } from '@mui/material';
-import { PictureAsPdf, GetApp, Autorenew } from '@mui/icons-material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Alert, Chip, IconButton, Paper } from '@mui/material';
+import { GetApp, Autorenew, Refresh } from '@mui/icons-material';
 import Layout from '../components/common/Layout';
-import Loading from '../components/common/Loading';
+import LoadingState from '../components/LoadingState';
+import SectionCard from '../components/SectionCard';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 import useFetch from '../hooks/useFetch';
 import api from '../services/api';
 import type { DriftAnalysis } from '../types';
@@ -55,90 +58,91 @@ export const Reports: React.FC = () => {
 
   return (
     <Layout>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
-          Compliance Reports
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Export comprehensive statistical summaries, AI explanations, and safety guardrail outcomes into PDF reports
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Compliance Reports"
+        subtitle="Export comprehensive statistical summaries, AI explanations, and safety guardrail outcomes into PDF reports"
+        action={
+          <IconButton onClick={() => fetchAnalyses('/drift/')} aria-label="Refresh">
+            <Refresh />
+          </IconButton>
+        }
+      />
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {loading ? (
-        <Loading message="Fetching compliance files..." />
+        <LoadingState message="Fetching compliance files..." />
+      ) : completedJobs.length === 0 ? (
+        <EmptyState
+          title="No Reports Available"
+          description="No completed analyses found. Please run a job first in the Drift Analysis Center."
+        />
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><b>Job ID</b></TableCell>
-                <TableCell><b>Reference</b></TableCell>
-                <TableCell><b>Target</b></TableCell>
-                <TableCell><b>Date Run</b></TableCell>
-                <TableCell><b>Report Status</b></TableCell>
-                <TableCell align="right"><b>Actions</b></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {completedJobs.map((job) => {
-                // Check if any report relation exists
-                // Since reports can be loaded via relationship
-                const hasReport = job.reports && job.reports.length > 0;
-                const report = hasReport ? job.reports![0] : null;
-
-                return (
-                  <TableRow key={job.id} hover>
-                    <TableCell>{job.id.substring(0, 8)}...</TableCell>
-                    <TableCell>v{job.reference_version_id.substring(0,4)}</TableCell>
-                    <TableCell>v{job.target_version_id.substring(0,4)}</TableCell>
-                    <TableCell>{new Date(job.created_at).toLocaleString()}</TableCell>
-                    <TableCell>
-                      {report ? (
-                        <Chip label="PDF READY" color="success" size="small" variant="outlined" />
-                      ) : (
-                        <Chip label="NOT EXPORTED" color="default" size="small" variant="outlined" />
-                      )}
-                    </TableCell>
-                    <TableCell align="right">
-                      {report ? (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="success"
-                          startIcon={<GetApp />}
-                          disabled={downloadingId === report.id}
-                          onClick={() => handleDownload(report.id, job.id)}
-                        >
-                          {downloadingId === report.id ? 'Downloading...' : 'Download PDF'}
-                        </Button>
-                      ) : (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          color="primary"
-                          startIcon={<Autorenew />}
-                          disabled={generatingId === job.id}
-                          onClick={() => handleGenerate(job.id)}
-                        >
-                          {generatingId === job.id ? 'Generating...' : 'Export to PDF'}
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {completedJobs.length === 0 && (
+        <SectionCard title="Available Reports">
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    <Typography color="text.secondary" p={2}>No completed analyses found. Please run a job first in the Drift Analysis Center.</Typography>
-                  </TableCell>
+                  <TableCell><b>Job ID</b></TableCell>
+                  <TableCell><b>Reference</b></TableCell>
+                  <TableCell><b>Target</b></TableCell>
+                  <TableCell><b>Date Run</b></TableCell>
+                  <TableCell><b>Report Status</b></TableCell>
+                  <TableCell align="right"><b>Actions</b></TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {completedJobs.map((job) => {
+                  // Check if any report relation exists
+                  // Since reports can be loaded via relationship
+                  const hasReport = job.reports && job.reports.length > 0;
+                  const report = hasReport ? job.reports![0] : null;
+
+                  return (
+                    <TableRow key={job.id} hover>
+                      <TableCell>{job.id.substring(0, 8)}...</TableCell>
+                      <TableCell>v{job.reference_version_id.substring(0,4)}</TableCell>
+                      <TableCell>v{job.target_version_id.substring(0,4)}</TableCell>
+                      <TableCell>{new Date(job.created_at).toLocaleString()}</TableCell>
+                      <TableCell>
+                        {report ? (
+                          <Chip label="PDF READY" color="success" size="small" variant="outlined" />
+                        ) : (
+                          <Chip label="NOT EXPORTED" color="default" size="small" variant="outlined" />
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {report ? (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
+                            startIcon={<GetApp />}
+                            disabled={downloadingId === report.id}
+                            onClick={() => handleDownload(report.id, job.id)}
+                          >
+                            {downloadingId === report.id ? 'Downloading...' : 'Download PDF'}
+                          </Button>
+                        ) : (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<Autorenew />}
+                            disabled={generatingId === job.id}
+                            onClick={() => handleGenerate(job.id)}
+                          >
+                            {generatingId === job.id ? 'Generating...' : 'Export to PDF'}
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </SectionCard>
       )}
     </Layout>
   );

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, FormControl, InputLabel, Select, MenuItem, Grid, Alert } from '@mui/material';
+import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Alert } from '@mui/material';
 import Layout from '../components/common/Layout';
-import Loading from '../components/common/Loading';
+import LoadingState from '../components/LoadingState';
+import SectionCard from '../components/SectionCard';
+import PageHeader from '../components/PageHeader';
 import TemplateForm from '../components/prompts/TemplateForm';
 import PromptTester from '../components/prompts/PromptTester';
 import useFetch from '../hooks/useFetch';
@@ -45,49 +47,44 @@ export const PromptEngineering: React.FC = () => {
 
   return (
     <Layout>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
-          Adaptive Prompt Control
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Customize templates that dynamically format data stats into structured LLM prompts
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Adaptive Prompt Control"
+        subtitle="Customize templates that dynamically format data stats into structured LLM prompts"
+      />
 
       {errorTemplates && <Alert severity="error" sx={{ mb: 3 }}>{errorTemplates}</Alert>}
       {errorExecutions && <Alert severity="warning" sx={{ mb: 3 }}>{errorExecutions}</Alert>}
 
       {loadingTemplates ? (
-        <Loading message="Fetching templates..." />
+        <LoadingState message="Fetching templates..." />
       ) : (
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
-            <FormControl fullWidth size="small" sx={{ mb: 3 }}>
-              <InputLabel>Active Prompt Template</InputLabel>
-              <Select
-                value={selectedId}
-                onChange={(e) => setSelectedId(e.target.value)}
-                label="Active Prompt Template"
-              >
-                {templates?.map((t) => (
-                  <MenuItem key={t.id} value={t.id}>
-                    {t.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { md: '7fr 5fr' }, gap: 3 }}>
+          <Box>
+            <SectionCard title="Select Template">
+              <FormControl fullWidth size="small">
+                <InputLabel>Active Prompt Template</InputLabel>
+                <Select
+                  value={selectedId}
+                  onChange={(e) => setSelectedId(e.target.value)}
+                  label="Active Prompt Template"
+                >
+                  {templates?.map((t) => (
+                    <MenuItem key={t.id} value={t.id}>
+                      {t.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </SectionCard>
 
             {selectedTemplate && (
               <TemplateForm template={selectedTemplate} onUpdate={loadAll} />
             )}
-          </Grid>
+          </Box>
 
-          <Grid item xs={12} md={5}>
-            <Paper sx={{ p: 3, mb: 3, bgcolor: 'background.paper', borderRadius: 2 }}>
-              <Typography variant="subtitle1" fontWeight={600} mb={1}>
-                Variables Injector Sandbox
-              </Typography>
-              <Typography variant="body2" color="text.secondary" mb={2}>
+          <Box>
+            <SectionCard title="Variables Injector Sandbox">
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                 The following variables are calculated by the drift engine and substituted dynamically into prompt placeholders:
               </Typography>
               <Box component="ul" sx={{ pl: 2, m: 0 }}>
@@ -107,35 +104,29 @@ export const PromptEngineering: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-            </Paper>
+            </SectionCard>
 
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="subtitle1" fontWeight={600} mb={1}>
-                Validation Guardrails Bound
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
+            <SectionCard title="Validation Guardrails Bound">
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 Our AI safety middleware automatically scans prompts for prompt injections before querying LLMs, and verifies response JSON schemas and metric factuality matches backend database calculations.
               </Typography>
-            </Paper>
+            </SectionCard>
 
             <Box sx={{ mt: 3 }}>
               {loadingExecutions ? (
-                <Loading message="Fetching prompt execution history..." />
+                <LoadingState message="Fetching prompt execution history..." />
               ) : latestExecution ? (
                 <PromptTester execution={latestExecution} />
               ) : (
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="subtitle1" fontWeight={600} mb={1}>
-                    Prompt Execution Logs
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                <SectionCard title="Prompt Execution Logs">
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     No execution logs found for this template yet. Run a drift analysis job to generate prompt and AI output traces.
                   </Typography>
-                </Paper>
+                </SectionCard>
               )}
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       )}
     </Layout>
   );

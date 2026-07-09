@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Card,
   CardContent,
-  Grid,
   Typography,
   Box,
   Chip,
@@ -101,9 +100,9 @@ const DriftSummary: React.FC<SummaryProps> = ({ analysis }) => {
   ];
 
   return (
-    <Grid container spacing={3}>
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3 }}>
       {cards.map((card) => (
-        <Grid item xs={12} sm={6} lg={3} key={card.title}>
+        <Box key={card.title}>
           <Card
             sx={{
               height: '100%',
@@ -128,10 +127,7 @@ const DriftSummary: React.FC<SummaryProps> = ({ analysis }) => {
               }}
             >
               <Box
-                display="flex"
-                alignItems="center"
-                gap={1.5}
-                mb={2}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}
               >
                 <Box
                   sx={{
@@ -182,7 +178,7 @@ const DriftSummary: React.FC<SummaryProps> = ({ analysis }) => {
                 {card.value}
               </Typography>
 
-              <Box flexGrow={1} />
+              <Box sx={{ flexGrow: 1 }} />
 
               <Chip
                 label="Live"
@@ -197,9 +193,9 @@ const DriftSummary: React.FC<SummaryProps> = ({ analysis }) => {
               />
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   );
 };
 

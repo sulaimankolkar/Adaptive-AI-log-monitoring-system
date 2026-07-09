@@ -3,8 +3,8 @@ import React, {
   useEffect,
   useMemo,
   useState,
-  ReactNode,
 } from 'react';
+import type { ReactNode } from 'react';
 
 import {
   ThemeProvider as MuiThemeProvider,
@@ -67,7 +67,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
         },
 
         success: {
-          main: '#10B981',
+          main: '#22C55E',
         },
 
         warning: {
@@ -84,8 +84,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
 
         background: isDark
           ? {
-              default: '#0F172A',
-              paper: '#1E293B',
+              default: '#0B1220',
+              paper: '#182235',
             }
           : {
               default: '#F8FAFC',
@@ -396,22 +396,6 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
             root: {
               borderRadius: 14,
               alignItems: 'center',
-            },
-
-            standardSuccess: {
-              backgroundColor: alpha('#10B981', 0.12),
-            },
-
-            standardWarning: {
-              backgroundColor: alpha('#F59E0B', 0.12),
-            },
-
-            standardError: {
-              backgroundColor: alpha('#EF4444', 0.12),
-            },
-
-            standardInfo: {
-              backgroundColor: alpha('#3B82F6', 0.12),
             },
           },
         },

@@ -28,15 +28,12 @@ interface ChartProps {
 const DriftChart: React.FC<ChartProps> = ({ metrics }) => {
   if (!metrics || metrics.length === 0) {
     return (
-      <Card
-        sx={{
-          borderRadius: 4,
-          bgcolor: '#182235',
-          border: '1px solid rgba(255,255,255,.06)',
-        }}
-      >
-        <CardContent sx={{ py: 8 }}>
-          <Typography align="center" color="text.secondary">
+      <Card>
+        <CardContent sx={{ py: 10 }}>
+          <Typography
+            align="center"
+            color="text.secondary"
+          >
             No drift metrics available.
           </Typography>
         </CardContent>
@@ -51,11 +48,18 @@ const DriftChart: React.FC<ChartProps> = ({ metrics }) => {
     isDrifted: m.is_drifted,
   }));
 
-  const drifted = chartData.filter((m) => m.isDrifted).length;
+  const drifted = chartData.filter(
+    (m) => m.isDrifted
+  ).length;
 
-  const major = chartData.filter((m) => m.severity === 'major').length;
+  const major = chartData.filter(
+    (m) => m.severity === 'major'
+  ).length;
 
-  const getColor = (isDrifted: boolean, severity: string) => {
+  const getColor = (
+    isDrifted: boolean,
+    severity: string
+  ) => {
     if (!isDrifted) return '#3B82F6';
 
     switch (severity) {
@@ -71,29 +75,28 @@ const DriftChart: React.FC<ChartProps> = ({ metrics }) => {
   };
 
   return (
-    <Card
-      sx={{
-        height: '100%',
-        borderRadius: 4,
-        background:
-          'linear-gradient(180deg,#1d2638 0%,#182235 100%)',
-        border: '1px solid rgba(255,255,255,.06)',
-      }}
-    >
-      <CardContent sx={{ p: 3 }}>
-
-        {/* Header */}
+    <Card>
+      <CardContent sx={{ p: 3.5 }}>
 
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={2}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: {
+              xs: 'flex-start',
+              md: 'center',
+            },
+            flexDirection: {
+              xs: 'column',
+              md: 'row',
+            },
+            gap: 2,
+          }}
         >
           <Box>
             <Typography
-              variant="h6"
-              fontWeight={700}
+              variant="h5"
+              sx={{ fontWeight: 700 }}
             >
               Feature Drift Distribution
             </Typography>
@@ -101,58 +104,69 @@ const DriftChart: React.FC<ChartProps> = ({ metrics }) => {
             <Typography
               variant="body2"
               color="text.secondary"
+              sx={{ mt: .5 }}
             >
               Population Stability Index (PSI)
+              across monitored features.
             </Typography>
           </Box>
 
-          <Box display="flex" gap={1}>
+          <Box
+            sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}
+          >
             <Chip
-              size="small"
-              color="error"
               label={`${major} Major`}
+              color="error"
+              size="small"
             />
 
             <Chip
-              size="small"
-              color="warning"
               label={`${drifted} Drifted`}
+              color="warning"
+              size="small"
             />
 
             <Chip
-              size="small"
-              color="primary"
               label={`${chartData.length} Features`}
+              color="primary"
+              size="small"
             />
           </Box>
         </Box>
 
-        <Divider sx={{ mb: 3 }} />
+        <Divider sx={{ my: 3 }} />
 
-        <ResponsiveContainer width="100%" height={360}>
+        <ResponsiveContainer
+          width="100%"
+          height={520}
+        >
           <BarChart
             data={chartData}
             margin={{
-              top: 10,
+              top: 20,
               right: 20,
-              left: 0,
-              bottom: 60,
+              left: 10,
+              bottom: 110,
             }}
           >
             <CartesianGrid
-              strokeDasharray="4 4"
-              stroke="rgba(255,255,255,.08)"
+              strokeDasharray="3 3"
+              stroke="rgba(148,163,184,.15)"
+              vertical={false}
             />
 
             <XAxis
               dataKey="name"
-              angle={-35}
+              angle={-45}
               interval={0}
+              height={95}
               textAnchor="end"
               tick={{
                 fill: '#94A3B8',
                 fontSize: 12,
               }}
+              axisLine={false}
+              tickLine={false}
             />
 
             <YAxis
@@ -160,19 +174,27 @@ const DriftChart: React.FC<ChartProps> = ({ metrics }) => {
                 fill: '#94A3B8',
                 fontSize: 12,
               }}
+              axisLine={false}
+              tickLine={false}
             />
 
             <Tooltip
               cursor={{
-                fill: 'rgba(255,255,255,.04)',
+                fill: 'rgba(99,102,241,.08)',
               }}
               contentStyle={{
                 background: '#111827',
                 border: '1px solid rgba(255,255,255,.08)',
                 borderRadius: 12,
                 color: '#fff',
+                boxShadow:
+                  '0 12px 30px rgba(0,0,0,.35)',
               }}
-              formatter={(value: any, name: any, props: any) => [
+              formatter={(
+                value: any,
+                _: any,
+                props: any
+              ) => [
                 Number(value).toFixed(4),
                 props.payload.severity.toUpperCase(),
               ]}
@@ -181,16 +203,19 @@ const DriftChart: React.FC<ChartProps> = ({ metrics }) => {
             <Bar
               dataKey="score"
               radius={[8, 8, 0, 0]}
+              maxBarSize={16}
             >
-              {chartData.map((item, index) => (
-                <Cell
-                  key={index}
-                  fill={getColor(
-                    item.isDrifted,
-                    item.severity
-                  )}
-                />
-              ))}
+              {chartData.map(
+                (item, index) => (
+                  <Cell
+                    key={index}
+                    fill={getColor(
+                      item.isDrifted,
+                      item.severity
+                    )}
+                  />
+                )
+              )}
             </Bar>
           </BarChart>
         </ResponsiveContainer>

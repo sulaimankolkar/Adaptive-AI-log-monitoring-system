@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Alert } from '@mui/material';
+import { Button, Alert } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import Layout from '../components/common/Layout';
 import DatasetTable from '../components/datasets/DatasetTable';
 import UploadModal from '../components/datasets/UploadModal';
-import Loading from '../components/common/Loading';
+import LoadingState from '../components/LoadingState';
+import SectionCard from '../components/SectionCard';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 import useFetch from '../hooks/useFetch';
 import type { Dataset } from '../types';
 
@@ -22,24 +25,20 @@ export const Datasets: React.FC = () => {
 
   return (
     <Layout>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Box>
-          <Typography variant="h4" fontWeight={700}>
-            Dataset Inventory
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Upload baseline references and target production files for statistical analyses
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={() => setModalOpen(true)}
-        >
-          Upload Dataset
-        </Button>
-      </Box>
+      <PageHeader
+        title="Dataset Inventory"
+        subtitle="Upload baseline references and target production files for statistical analyses"
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={() => setModalOpen(true)}
+          >
+            Upload Dataset
+          </Button>
+        }
+      />
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -48,9 +47,16 @@ export const Datasets: React.FC = () => {
       )}
 
       {loading ? (
-        <Loading message="Fetching datasets..." />
+        <LoadingState message="Fetching datasets..." />
+      ) : !data || data.length === 0 ? (
+        <EmptyState
+          title="No Datasets Found"
+          description="Upload your first dataset to begin drift analysis"
+        />
       ) : (
-        <DatasetTable datasets={data || []} />
+        <SectionCard title="All Datasets">
+          <DatasetTable datasets={data} />
+        </SectionCard>
       )}
 
       <UploadModal

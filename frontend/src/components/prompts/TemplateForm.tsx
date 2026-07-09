@@ -48,7 +48,7 @@ export const TemplateForm: React.FC<FormProps> = ({ template, onUpdate }) => {
 
   return (
     <Paper component="form" onSubmit={handleSubmit} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Typography variant="h6" fontWeight={600}>
+      <Typography variant="h6" sx={{ fontWeight: 600 }}>
         Configure Prompt Template: {template.name}
       </Typography>
 
@@ -74,10 +74,10 @@ export const TemplateForm: React.FC<FormProps> = ({ template, onUpdate }) => {
         fullWidth
         required
         helperText="Use placeholders {ref_version}, {target_version}, and {drift_metrics} to inject runtime drift stats."
-        inputProps={{ style: { fontFamily: 'monospace', fontSize: '0.875rem' } }}
+        sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}
       />
 
-      <Box display="flex" justifyContent="flex-end">
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           type="submit"
           variant="contained"

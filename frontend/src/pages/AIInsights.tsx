@@ -7,13 +7,15 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Typography,
 } from '@mui/material';
 import { AutoAwesome, Refresh } from '@mui/icons-material';
 import Layout from '../components/common/Layout';
-import Loading from '../components/common/Loading';
+import LoadingState from '../components/LoadingState';
+import SectionCard from '../components/SectionCard';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 import useFetch from '../hooks/useFetch';
 import type { InsightDetail, InsightListItem } from '../types';
 
@@ -82,34 +84,29 @@ export const AIInsights: React.FC = () => {
 
   return (
     <Layout>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box>
-          <Typography variant="h4" fontWeight={700}>
-            AI Insights
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Generated intelligence from drift analysis using prompt templates and guardrails
-          </Typography>
-        </Box>
-
-        <Button
-          variant="outlined"
-          startIcon={<Refresh />}
-          onClick={loadList}
-          disabled={loadingList}
-        >
-          Refresh
-        </Button>
-      </Box>
+      <PageHeader
+        title="AI Insights"
+        subtitle="Generated intelligence from drift analysis using prompt templates and guardrails"
+        action={
+          <Button
+            variant="outlined"
+            startIcon={<Refresh />}
+            onClick={loadList}
+            disabled={loadingList}
+          >
+            Refresh
+          </Button>
+        }
+      />
 
       {listError && <Alert severity="error" sx={{ mb: 2 }}>{listError}</Alert>}
       {detailError && <Alert severity="error" sx={{ mb: 2 }}>{detailError}</Alert>}
       {actionError && <Alert severity="error" sx={{ mb: 2 }}>{actionError}</Alert>}
 
       {loadingList ? (
-        <Loading message="Loading insights index..." />
+        <LoadingState message="Loading insights index..." />
       ) : (
-        <Paper sx={{ p: 3, mb: 3 }}>
+        <SectionCard title="Select Drift Analysis">
           <FormControl fullWidth size="small">
             <InputLabel>Drift Analysis</InputLabel>
             <Select
@@ -124,21 +121,21 @@ export const AIInsights: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-        </Paper>
+        </SectionCard>
       )}
 
       {!selectedAnalysisId ? null : loadingDetail ? (
-        <Loading message="Loading insight details..." />
+        <LoadingState message="Loading insight details..." />
       ) : !insightDetail ? (
-        <Paper sx={{ p: 3 }}>
-          <Typography color="text.secondary">No insight details available.</Typography>
-        </Paper>
+        <EmptyState
+          title="No Insight Details Available"
+          description="Select a drift analysis to view AI-generated insights"
+        />
       ) : (
-        <Box display="flex" flexDirection="column" gap={2}>
-          <Paper sx={{ p: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h6" fontWeight={600}>Insight Metadata</Typography>
-              <Box display="flex" gap={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <SectionCard title="Insight Metadata">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
                 <Chip label={`Severity: ${insightDetail.drift_severity.toUpperCase()}`} color="warning" variant="outlined" />
                 <Chip label={`Model: ${(insightDetail.model_used || 'N/A').toUpperCase()}`} color="primary" variant="outlined" />
               </Box>
@@ -150,7 +147,7 @@ export const AIInsights: React.FC = () => {
               Guardrail: {insightDetail.guardrail_validation_result ? `${insightDetail.guardrail_validation_result.status.toUpperCase()} (${insightDetail.guardrail_validation_result.score ?? 'N/A'})` : 'N/A'}
             </Typography>
             {canGenerate && (
-              <Box mt={2}>
+              <Box sx={{ mt: 2 }}>
                 <Button
                   variant="contained"
                   startIcon={<AutoAwesome />}
@@ -161,17 +158,15 @@ export const AIInsights: React.FC = () => {
                 </Button>
               </Box>
             )}
-          </Paper>
+          </SectionCard>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={1}>Executive Summary</Typography>
+          <SectionCard title="Executive Summary">
             <Typography variant="body2" color="text.secondary">
               {insightDetail.executive_summary || 'Not available.'}
             </Typography>
-          </Paper>
+          </SectionCard>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={1}>Technical Analysis</Typography>
+          <SectionCard title="Technical Analysis">
             {(insightDetail.technical_analysis || []).length === 0 ? (
               <Typography variant="body2" color="text.secondary">Not available.</Typography>
             ) : (
@@ -183,17 +178,15 @@ export const AIInsights: React.FC = () => {
                 ))}
               </Box>
             )}
-          </Paper>
+          </SectionCard>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={1}>Business Impact</Typography>
+          <SectionCard title="Business Impact">
             <Typography variant="body2" color="text.secondary">
               {insightDetail.business_impact || 'Not available.'}
             </Typography>
-          </Paper>
+          </SectionCard>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={1}>Recommendations</Typography>
+          <SectionCard title="Recommendations">
             {(insightDetail.recommendations || []).length === 0 ? (
               <Typography variant="body2" color="text.secondary">Not available.</Typography>
             ) : (
@@ -205,17 +198,15 @@ export const AIInsights: React.FC = () => {
                 ))}
               </Box>
             )}
-          </Paper>
+          </SectionCard>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={1}>Prompt Used</Typography>
+          <SectionCard title="Prompt Used">
             <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
               {insightDetail.prompt_used || 'Not available.'}
             </Typography>
-          </Paper>
+          </SectionCard>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={1}>Guardrail Validation Result</Typography>
+          <SectionCard title="Guardrail Validation Result">
             {insightDetail.guardrail_validation_result ? (
               <>
                 <Typography variant="body2" color="text.secondary">
@@ -234,7 +225,7 @@ export const AIInsights: React.FC = () => {
             ) : (
               <Typography variant="body2" color="text.secondary">Not available.</Typography>
             )}
-          </Paper>
+          </SectionCard>
         </Box>
       )}
     </Layout>

@@ -34,7 +34,7 @@ export const DatasetTable: React.FC<TableProps> = ({ datasets }) => {
             return (
               <TableRow key={dataset.id} hover>
                 <TableCell>
-                  <Typography variant="body2" fontWeight={600}>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {dataset.name}
                   </Typography>
                 </TableCell>
@@ -44,7 +44,7 @@ export const DatasetTable: React.FC<TableProps> = ({ datasets }) => {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Box display="flex" gap={0.5} flexWrap="wrap">
+                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                     {dataset.versions.map((v) => (
                       <Chip
                         key={v.id}

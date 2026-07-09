@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Paper, FormControl, InputLabel, Select, MenuItem, Grid, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
+import { Box, Typography, Button, FormControl, InputLabel, Select, MenuItem, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Paper } from '@mui/material';
 import { PlayArrow, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/common/Layout';
-import Loading from '../components/common/Loading';
+import LoadingState from '../components/LoadingState';
+import SectionCard from '../components/SectionCard';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
 import useFetch from '../hooks/useFetch';
 import api from '../services/api';
 import type { Dataset, DriftAnalysis as DriftType } from '../types';
@@ -71,152 +74,139 @@ export const DriftAnalysis: React.FC = () => {
 
   return (
     <Layout>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
-          Drift Analysis Center
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Run statistical drift detection tests and compare dataset distributions
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Drift Analysis Center"
+        subtitle="Run statistical drift detection tests and compare dataset distributions"
+      />
 
       {success && <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess(null)}>{success}</Alert>}
       {error && <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>{error}</Alert>}
 
-      <Grid container spacing={3} mb={5}>
-        <Grid item xs={12} md={10}>
-          <Paper component="form" onSubmit={handleRun} sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight={600} mb={3}>
-              Trigger New Drift Comparison
-            </Typography>
-            <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} sm={5}>
-                <Typography variant="subtitle2" mb={1} color="text.secondary">Reference / Baseline Data</Typography>
-                <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-                  <InputLabel>Select Dataset</InputLabel>
-                  <Select value={refDs} onChange={(e) => { setRefDs(e.target.value); setRefVer(''); }} label="Select Dataset">
-                    {datasets?.map((d) => (
-                      <MenuItem key={d.id} value={d.id}>{d.name}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth size="small" disabled={!refDs}>
-                  <InputLabel>Select Version</InputLabel>
-                  <Select value={refVer} onChange={(e) => setRefVer(e.target.value)} label="Select Version">
-                    {getRefVersions().map((v) => (
-                      <MenuItem key={v.id} value={v.id}>v{v.version_num} ({v.row_count} rows)</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+      <SectionCard title="Trigger New Drift Comparison">
+        <Box component="form" onSubmit={handleRun}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '5fr 2fr 5fr' }, gap: 3, alignItems: 'center' }}>
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary' }}>Reference / Baseline Data</Typography>
+              <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                <InputLabel>Select Dataset</InputLabel>
+                <Select value={refDs} onChange={(e) => { setRefDs(e.target.value); setRefVer(''); }} label="Select Dataset">
+                  {datasets?.map((d) => (
+                    <MenuItem key={d.id} value={d.id}>{d.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth size="small" disabled={!refDs}>
+                <InputLabel>Select Version</InputLabel>
+                <Select value={refVer} onChange={(e) => setRefVer(e.target.value)} label="Select Version">
+                  {getRefVersions().map((v) => (
+                    <MenuItem key={v.id} value={v.id}>v{v.version_num} ({v.row_count} rows)</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
-              <Grid item xs={12} sm={2} textAlign="center">
-                <Typography variant="h6" color="text.disabled">VS</Typography>
-              </Grid>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ color: 'text.disabled' }}>VS</Typography>
+            </Box>
 
-              <Grid item xs={12} sm={5}>
-                <Typography variant="subtitle2" mb={1} color="text.secondary">Target / Production Data</Typography>
-                <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-                  <InputLabel>Select Dataset</InputLabel>
-                  <Select value={tarDs} onChange={(e) => { setTarDs(e.target.value); setTarVer(''); }} label="Select Dataset">
-                    {datasets?.map((d) => (
-                      <MenuItem key={d.id} value={d.id}>{d.name}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth size="small" disabled={!tarDs}>
-                  <InputLabel>Select Version</InputLabel>
-                  <Select value={tarVer} onChange={(e) => setTarVer(e.target.value)} label="Select Version">
-                    {getTarVersions().map((v) => (
-                      <MenuItem key={v.id} value={v.id}>v{v.version_num} ({v.row_count} rows)</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary' }}>Target / Production Data</Typography>
+              <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+                <InputLabel>Select Dataset</InputLabel>
+                <Select value={tarDs} onChange={(e) => { setTarDs(e.target.value); setTarVer(''); }} label="Select Dataset">
+                  {datasets?.map((d) => (
+                    <MenuItem key={d.id} value={d.id}>{d.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth size="small" disabled={!tarDs}>
+                <InputLabel>Select Version</InputLabel>
+                <Select value={tarVer} onChange={(e) => setTarVer(e.target.value)} label="Select Version">
+                  {getTarVersions().map((v) => (
+                    <MenuItem key={v.id} value={v.id}>v{v.version_num} ({v.row_count} rows)</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
 
-              <Grid item xs={12} display="flex" justifyContent="flex-end" mt={2}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  startIcon={<PlayArrow />}
-                  disabled={submitting}
-                >
-                  {submitting ? 'Triggering...' : 'Run Statistical Pipeline'}
-                </Button>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-      </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              startIcon={<PlayArrow />}
+              disabled={submitting}
+            >
+              {submitting ? 'Triggering...' : 'Run Statistical Pipeline'}
+            </Button>
+          </Box>
+        </Box>
+      </SectionCard>
 
-      <Typography variant="h6" fontWeight={600} mb={2}>
-        Historical Analysis Runs
-      </Typography>
-
-      {loadingJobs ? (
-        <Loading message="Fetching job logs..." />
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><b>Job ID</b></TableCell>
-                <TableCell><b>Reference</b></TableCell>
-                <TableCell><b>Target</b></TableCell>
-                <TableCell><b>Status</b></TableCell>
-                <TableCell><b>Execution Date</b></TableCell>
-                <TableCell align="right"><b>Actions</b></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {analyses?.map((job) => (
-                <TableRow key={job.id} hover>
-                  <TableCell>{job.id.substring(0, 8)}...</TableCell>
-                  <TableCell>
-                    {job.reference_version_id ? `v${job.reference_version_id.substring(0,4)}` : 'N/A'}
-                  </TableCell>
-                  <TableCell>
-                    {job.target_version_id ? `v${job.target_version_id.substring(0,4)}` : 'N/A'}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={job.status.toUpperCase()}
-                      size="small"
-                      color={
-                        job.status === 'completed'
-                          ? 'success'
-                          : job.status === 'failed'
-                          ? 'error'
-                          : 'warning'
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>{new Date(job.created_at).toLocaleString()}</TableCell>
-                  <TableCell align="right">
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      startIcon={<Visibility />}
-                      onClick={() => navigate(`/?job=${job.id}`)}
-                      disabled={job.status !== 'completed'}
-                    >
-                      View Report
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {(!analyses || analyses.length === 0) && (
+      <SectionCard title="Historical Analysis Runs">
+        {loadingJobs ? (
+          <LoadingState message="Fetching job logs..." />
+        ) : !analyses || analyses.length === 0 ? (
+          <EmptyState
+            title="No Analysis Runs Found"
+            description="Run a drift analysis to see historical job data"
+          />
+        ) : (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    <Typography color="text.secondary" p={2}>No analysis runs found.</Typography>
-                  </TableCell>
+                  <TableCell><b>Job ID</b></TableCell>
+                  <TableCell><b>Reference</b></TableCell>
+                  <TableCell><b>Target</b></TableCell>
+                  <TableCell><b>Status</b></TableCell>
+                  <TableCell><b>Execution Date</b></TableCell>
+                  <TableCell align="right"><b>Actions</b></TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+              </TableHead>
+              <TableBody>
+                {analyses.map((job) => (
+                  <TableRow key={job.id} hover>
+                    <TableCell>{job.id.substring(0, 8)}...</TableCell>
+                    <TableCell>
+                      {job.reference_version_id ? `v${job.reference_version_id.substring(0,4)}` : 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      {job.target_version_id ? `v${job.target_version_id.substring(0,4)}` : 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={job.status.toUpperCase()}
+                        size="small"
+                        color={
+                          job.status === 'completed'
+                            ? 'success'
+                            : job.status === 'failed'
+                            ? 'error'
+                            : 'warning'
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>{new Date(job.created_at).toLocaleString()}</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<Visibility />}
+                        onClick={() => navigate(`/?job=${job.id}`)}
+                        disabled={job.status !== 'completed'}
+                      >
+                        View Report
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </SectionCard>
     </Layout>
   );
 };

@@ -11,7 +11,7 @@ export const PromptTester: React.FC<TesterProps> = ({ execution }) => {
 
   return (
     <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" fontWeight={600} mb={2}>
+      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
         Prompt Execution Logs
       </Typography>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
@@ -28,7 +28,7 @@ export const PromptTester: React.FC<TesterProps> = ({ execution }) => {
           rows={12}
           fullWidth
           disabled
-          inputProps={{ style: { fontFamily: 'monospace', fontSize: '0.85rem', color: '#94a3b8' } }}
+          sx={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#94a3b8' }}
         />
       )}
 
@@ -39,11 +39,11 @@ export const PromptTester: React.FC<TesterProps> = ({ execution }) => {
           rows={12}
           fullWidth
           disabled
-          inputProps={{ style: { fontFamily: 'monospace', fontSize: '0.85rem', color: '#4ade80' } }}
+          sx={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#4ade80' }}
         />
       )}
       
-      <Box mt={2} display="flex" gap={3}>
+      <Box sx={{ mt: 2, display: 'flex', gap: 3 }}>
         <Typography variant="caption" color="text.secondary">
           <b>Tokens Used:</b> {execution.tokens_used || 'N/A'}
         </Typography>

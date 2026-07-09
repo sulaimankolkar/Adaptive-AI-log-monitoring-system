@@ -67,7 +67,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ open, onClose, onSucce
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle fontWeight={600}>Upload New Tabular Dataset</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 600 }}>Upload New Tabular Dataset</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {error && (
@@ -117,7 +117,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ open, onClose, onSucce
               onChange={handleFileChange}
             />
             <CloudUpload color={file ? 'primary' : 'disabled'} sx={{ fontSize: 40, mb: 1 }} />
-            <Typography variant="body2" fontWeight={500}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {file ? file.name : 'Click or Drag CSV file here to upload'}
             </Typography>
             <Typography variant="caption" color="text.secondary">

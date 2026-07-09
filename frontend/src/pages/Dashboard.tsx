@@ -6,7 +6,6 @@ import {
   CardContent,
   Divider,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Paper,
@@ -17,7 +16,9 @@ import {
 import { useSearchParams } from 'react-router-dom';
 
 import Layout from '../components/common/Layout';
-import Loading from '../components/common/Loading';
+import { Loading } from '../components/common/Loading';
+import { SectionCard } from '../components/common/SectionCard';
+
 
 import DriftSummary from '../components/dashboard/DriftSummary';
 import DriftChart from '../components/dashboard/DriftChart';
@@ -110,8 +111,8 @@ export const Dashboard: React.FC = () => {
         <Box>
           <Typography
             variant="h4"
-            fontWeight={700}
             sx={{
+              fontWeight: 700,
               mb: .5,
             }}
           >
@@ -235,73 +236,42 @@ export const Dashboard: React.FC = () => {
           </Typography>
         </Paper>
       ) : (
-        <Grid
-          container
-          spacing={3}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3,
+          }}
         >
           {/* ============================
                  KPI SUMMARY
           ============================ */}
 
-          <Grid item xs={12}>
-            <DriftSummary
-              analysis={activeJob}
-            />
-          </Grid>
+          <Box sx={{ width: '100%' }}>
+            <SectionCard title="Key Performance Indicators">
+              <DriftSummary analysis={activeJob} />
+            </SectionCard>
+          </Box>
 
           {/* ============================
                  FEATURE DRIFT CHART
           ============================ */}
-
-          <Grid item xs={12}>
-            <Card
-              elevation={0}
-              sx={{
-                borderRadius: 4,
-                overflow: 'hidden',
-              }}
-            >
-              <CardContent
-                sx={{
-                  p: 3,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  fontWeight={700}
-                  sx={{
-                    mb: 2.5,
-                  }}
-                >
-                  Feature Drift Distribution
-                </Typography>
-
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 3,
-                  }}
-                >
-                  Statistical drift scores
-                  across monitored
-                  features.
-                </Typography>
-
-                <DriftChart
-                  metrics={
-                    activeJob.metrics || []
-                  }
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 1500,
+              mx: "auto",
+            }}
+          >
+            <DriftChart
+              metrics={activeJob.metrics || []}
+            />
+          </Box>
           {/* ============================
                  AI INSIGHTS
           ============================ */}
 
-          <Grid item xs={12}>
+          <Box sx={{ width: '100%' }}>
             <Card
               elevation={0}
               sx={{
@@ -321,8 +291,8 @@ export const Dashboard: React.FC = () => {
               >
                 <Typography
                   variant="h6"
-                  fontWeight={700}
                   sx={{
+                    fontWeight: 700,
                     mb: 3,
                   }}
                 >
@@ -330,9 +300,11 @@ export const Dashboard: React.FC = () => {
                 </Typography>
                 {activeJob.ai_insight ? (
                   <Box
-                    display="flex"
-                    flexDirection="column"
-                    gap={3}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 3,
+                    }}
                   >
                     <Typography
                       variant="body1"
@@ -347,8 +319,8 @@ export const Dashboard: React.FC = () => {
 
                     <Typography
                       variant="subtitle2"
-                      fontWeight={700}
                       sx={{
+                        fontWeight: 700,
                         textTransform: 'uppercase',
                         letterSpacing: '.08em',
                         color: 'primary.main',
@@ -386,8 +358,8 @@ export const Dashboard: React.FC = () => {
 
                     <Typography
                       variant="subtitle2"
-                      fontWeight={700}
                       sx={{
+                        fontWeight: 700,
                         textTransform: 'uppercase',
                         letterSpacing: '.08em',
                         color: 'primary.main',
@@ -435,18 +407,18 @@ export const Dashboard: React.FC = () => {
                 )}
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
 
           {/* ============================
                  GUARDRAIL AUDIT
           ============================ */}
 
-          <Grid item xs={12}>
+          <Box sx={{ width: '100%' }}>
             <GuardrailLogs
               logs={guardrailLogs}
             />
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       )}
 
     </Layout>

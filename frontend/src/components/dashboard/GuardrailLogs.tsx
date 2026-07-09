@@ -58,15 +58,12 @@ const GuardrailLogs: React.FC<GuardrailProps> = ({ logs }) => {
         {/* Header */}
 
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={3}
+          sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
         >
           <Box>
             <Typography
               variant="h6"
-              fontWeight={700}
+              sx={{ fontWeight: 700 }}
             >
               AI Guardrails Audit Log
             </Typography>
@@ -146,8 +143,7 @@ const GuardrailLogs: React.FC<GuardrailProps> = ({ logs }) => {
                   <TableCell>
 
                     <Typography
-                      fontWeight={600}
-                      textTransform="capitalize"
+                      sx={{ fontWeight: 600, textTransform: 'capitalize' }}
                     >
                       {log.check_name.replaceAll('_', ' ')}
                     </Typography>
@@ -176,7 +172,7 @@ const GuardrailLogs: React.FC<GuardrailProps> = ({ logs }) => {
                   <TableCell>
 
                     <Typography
-                      fontWeight={600}
+                      sx={{ fontWeight: 600 }}
                     >
                       {log.score !== undefined
                         ? log.score.toFixed(2)
